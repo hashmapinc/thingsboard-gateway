@@ -155,7 +155,7 @@ public class OpcUaServerMonitor {
                 .map(m -> m.getValue()).collect(Collectors.toList());
 
         if (matchedMappings.isEmpty()) {
-            log.info("matchedMapping is empty");
+            log.debug("matchedMapping is empty");
         }
         matchedMappings.forEach(m -> {
             try {
