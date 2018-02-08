@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.gateway.extensions.opc;
+package org.thingsboard.gateway.service;
 
 import org.thingsboard.gateway.extensions.ExtensionService;
+import org.thingsboard.gateway.service.gateway.GatewayService;
 
-/**
- * Created by ashvayka on 16.01.17.
- */
-public interface OpcUaService extends ExtensionService {
+public interface ExtensionServiceCreation {
+
+    ExtensionService createExtensionServiceByType(GatewayService gateway, String type);
 }

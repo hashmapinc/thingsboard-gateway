@@ -16,19 +16,17 @@
 package org.thingsboard.gateway.extensions.http;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.thingsboard.gateway.extensions.ExtensionUpdate;
 import org.thingsboard.gateway.extensions.http.conf.HttpConfiguration;
 import org.thingsboard.gateway.extensions.http.conf.HttpConverterConfiguration;
 import org.thingsboard.gateway.extensions.http.conf.mapping.HttpDeviceDataConverter;
-import org.thingsboard.gateway.service.GatewayService;
-import org.thingsboard.gateway.service.MqttDeliveryFuture;
+import org.thingsboard.gateway.service.conf.TbExtensionConfiguration;
+import org.thingsboard.gateway.service.gateway.GatewayService;
+import org.thingsboard.gateway.service.gateway.MqttDeliveryFuture;
 import org.thingsboard.gateway.service.data.DeviceData;
 import org.thingsboard.gateway.util.ConfigurationTools;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,26 +37,34 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
-@ConditionalOnProperty(prefix = "http", value = "enabled", havingValue = "true")
-public class DefaultHttpService implements HttpService {
+public class DefaultHttpService extends ExtensionUpdate implements HttpService {
 
     private static final int OPERATION_TIMEOUT_IN_SEC = 10;
 
-    @Value("${http.configuration}")
-    private String configurationFile;
-
-    @Autowired
-    private GatewayService gateway;
-
+    private final GatewayService gateway;
+    private TbExtensionConfiguration currentConfiguration;
     private Map<String, HttpConverterConfiguration> httpConverterConfigurations;
 
-    @PostConstruct
-    public void init() throws IOException {
+    public DefaultHttpService(GatewayService gateway) {
+        this.gateway = gateway;
+    }
+
+    @Override
+    public TbExtensionConfiguration getCurrentConfiguration() {
+        return currentConfiguration;
+    }
+
+    @Override
+    public void init(TbExtensionConfiguration configurationNode, Boolean isRemote) throws IOException {
+        currentConfiguration = configurationNode;
         HttpConfiguration configuration;
         try {
-            configuration = ConfigurationTools.readConfiguration(configurationFile, HttpConfiguration.class);
+            if (isRemote) {
+                configuration = ConfigurationTools.readConfiguration(configurationNode.getConfiguration(), HttpConfiguration.class);
+            } else {
+                configuration = ConfigurationTools.readFileConfiguration(configurationNode.getExtensionConfiguration(), HttpConfiguration.class);
+            }
             if (configuration.getConverterConfigurations() != null) {
                 httpConverterConfigurations = configuration
                         .getConverterConfigurations()
@@ -71,26 +77,27 @@ public class DefaultHttpService implements HttpService {
                         .collect(Collectors.toMap(HttpConverterConfiguration::getDeviceTypeId, Function.identity()));
             }
         } catch (IOException e) {
-            log.error("Http service configuration failed!", e);
+            log.error("[{}] Http service configuration failed!", gateway.getTenantLabel(), e);
+            gateway.onConfigurationError(e, currentConfiguration);
             throw e;
         }
     }
 
     @Override
+    public void destroy() throws Exception {
+    }
+
+    @Override
     public void processRequest(String converterId, String token, String body) throws Exception {
-        log.trace("Processing request body [{}] for converterId [{}] and token [{}]", body, converterId, token);
+        log.trace("[{}] Processing request body [{}] for converterId [{}] and token [{}]", gateway.getTenantLabel(), body, converterId, token);
         HttpConverterConfiguration configuration = httpConverterConfigurations.get(converterId);
         if (configuration != null) {
-            if (configuration.getToken().equals(token)) {
+            if (StringUtils.isEmpty(configuration.getToken()) || configuration.getToken().equals(token)) {
                 processBody(body, configuration);
-            }
-            else {
-                log.error("Request token [{}] for converter id [{}] doesn't match configuration token!", token, converterId);
+            } else {
+                log.error("[{}] Request token [{}] for converter id [{}] doesn't match configuration token!", gateway.getTenantLabel(), token, converterId);
                 throw new SecurityException("Request token [" + token + "] for converter id [" + converterId + "] doesn't match configuration token!");
             }
-        } else {
-            log.error("No configuration found for converter id [{}]. Please add configuration for this converter id!", converterId);
-            throw new IllegalArgumentException("No configuration found for converter id [" + converterId + "]. Please add configuration for this converter id!");
         }
     }
 
@@ -115,7 +122,7 @@ public class DefaultHttpService implements HttpService {
                         waitWithTimeout(future.get());
                     }
                 } else {
-                    log.error("DeviceData is null. Body [{}] was not parsed successfully!", body);
+                    log.error("[{}] DeviceData is null. Body [{}] was not parsed successfully!", gateway.getTenantLabel(), body);
                     throw new IllegalArgumentException("Device Data is null. Body [" + body + "] was not parsed successfully!");
                 }
             }
