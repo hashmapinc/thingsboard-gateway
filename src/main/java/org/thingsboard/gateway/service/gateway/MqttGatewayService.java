@@ -24,8 +24,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import nl.jk5.mqtt.*;
-import nl.jk5.mqtt.MqttClient;
+import org.thingsboard.gateway.mqtt.*;
+import org.thingsboard.gateway.mqtt.MqttClient;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -644,7 +644,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
             try {
                 SslContext sslCtx = initSslContext(connection.getSecurity());
                 mqttClientConfig = new MqttClientConfig(sslCtx);
-            } catch (Exception e) {
+                } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }

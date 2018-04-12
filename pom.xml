@@ -41,7 +41,6 @@
         <paho.client.version>1.2.0</paho.client.version>
         <json-path.version>2.2.0</json-path.version>
         <milo.client.version>0.1.0</milo.client.version>
-        <netty-mqtt.version>2.0.0TB</netty-mqtt.version>
         <spring-boot.version>1.4.3.RELEASE</spring-boot.version>
         <lombok.version>1.16.18</lombok.version>
         <spring.version>4.3.4.RELEASE</spring.version>
@@ -54,6 +53,7 @@
         <pkg.unixLogFolder>/var/log/${pkg.name}</pkg.unixLogFolder>
         <pkg.installFolder>/usr/share/${pkg.name}</pkg.installFolder>
         <pkg.win.dist>${project.build.directory}/windows</pkg.win.dist>
+        <netty.version>4.1.22.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -128,11 +128,6 @@
             <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
-            <groupId>nl.jk5.netty-mqtt</groupId>
-            <artifactId>netty-mqtt</artifactId>
-            <version>${netty-mqtt.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -151,6 +146,16 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-mqtt</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty.version}</version>
         </dependency>
     </dependencies>
 

@@ -20,7 +20,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.netty.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
-import nl.jk5.mqtt.MqttClient;
+import org.thingsboard.gateway.mqtt.MqttClient;
 import org.thingsboard.gateway.service.conf.TbConnectionConfiguration;
 import org.thingsboard.gateway.service.conf.TbPersistenceConfiguration;
 
