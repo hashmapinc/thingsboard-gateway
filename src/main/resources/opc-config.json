@@ -1,7 +1,7 @@
 {
   "servers": [
     {
-      "applicationName": "Thingsboard OPC-UA client",
+      "applicationName": "Tempus OPC-UA client",
       "applicationUri": "",
       "port": 49320,
       "scanPeriodInSeconds": 10,

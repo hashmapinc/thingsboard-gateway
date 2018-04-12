@@ -166,7 +166,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
         devices.putIfAbsent(deviceName, new DeviceInfo(deviceName, deviceType));
         return persistMessage(GATEWAY_CONNECT_TOPIC, msgId, msgData, deviceName,
                 message -> {
-                    log.info("[{}][{}] Device connect event is reported to Thingsboard!", deviceName, msgId);
+                    log.info("[{}][{}] Device connect event is reported to Tempus!", deviceName, msgId);
                 },
                 error -> log.warn("[{}][{}] Failed to report device connection!", deviceName, msgId, error));
 
