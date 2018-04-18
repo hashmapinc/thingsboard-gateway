@@ -104,7 +104,13 @@ public class OpcUaServerMonitor {
                     .build();
 
             client = new OpcUaClient(config);
-            client.connect().get();
+
+            try{
+                client.connect().get();
+            }catch(Exception exp){
+                client.connect().get();
+            }
+
 
             subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
 
