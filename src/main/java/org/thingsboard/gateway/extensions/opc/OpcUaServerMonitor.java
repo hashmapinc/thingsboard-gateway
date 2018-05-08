@@ -160,6 +160,9 @@ public class OpcUaServerMonitor {
                 .filter(mappingEntry -> mappingEntry.getKey().matcher(node.getNodeId().getIdentifier().toString()).matches())
                 .map(m -> m.getValue()).collect(Collectors.toList());
 
+        if (matchedMappings.isEmpty()) {
+            log.debug("matchedMapping is empty");
+        }
         matchedMappings.forEach(m -> {
             try {
                 scanDevice(node, m);
@@ -194,7 +197,7 @@ public class OpcUaServerMonitor {
         log.debug("Scanning device node: {}", node);
         Set<String> tags = m.getAllTags();
         log.debug("Scanning node hierarchy for tags: {}", tags);
-        Map<String, NodeId> tagMap = lookupTags(node.getNodeId(), node.getName(), tags);
+        Map<String, NodeId> tagMap = lookupTags(node.getNodeId(), node.getNodeId().getIdentifier().toString(), tags);
         log.debug("Scanned {} tags out of {}", tagMap.size(), tags.size());
 
         OpcUaDevice device;
@@ -322,6 +325,7 @@ public class OpcUaServerMonitor {
                     continue;
                 }
 
+
                 String browseName = rd.getBrowseName().getName();
                 String name;
                 String childIdStr = childId.getIdentifier().toString();
@@ -330,6 +334,7 @@ public class OpcUaServerMonitor {
                 } else {
                     name = rd.getBrowseName().getName();
                 }
+
                 if (tags.contains(name)) {
                     values.put(name, childId);
                 }
