@@ -79,10 +79,10 @@ public class OpcUaServerMonitor {
         this.mappings = configuration.getMapping().stream().collect(Collectors.toMap(m -> Pattern.compile(m.getDeviceNodePattern()), Function.identity()));
     }
 
-    public void connect() {
+    public void connect(Boolean isRemote) {
         try {
             log.info("Initializing OPC-UA server connection to [{}:{}]!", configuration.getHost(), configuration.getPort());
-            CertificateInfo certificate = ConfigurationTools.loadCertificate(configuration.getKeystore());
+            CertificateInfo certificate = ConfigurationTools.loadCertificate(configuration.getKeystore(), isRemote);
 
             SecurityPolicy securityPolicy = SecurityPolicy.valueOf(configuration.getSecurity());
             IdentityProvider identityProvider = configuration.getIdentity().toProvider();
@@ -104,7 +104,13 @@ public class OpcUaServerMonitor {
                     .build();
 
             client = new OpcUaClient(config);
-            client.connect().get();
+
+            try{
+                client.connect().get();
+            }catch(Exception exp){
+                client.connect().get();
+            }
+
 
             subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
 
@@ -318,8 +324,16 @@ public class OpcUaServerMonitor {
                     log.trace("Ignoring remote node: {}", rd.getNodeId());
                     continue;
                 }
-                String browseId = rd.getNodeId().getIdentifier().toString();
-                String name = browseId.substring(deviceNodeName.length() + 1);
+
+
+                String browseName = rd.getBrowseName().getName();
+                String name;
+                String childIdStr = childId.getIdentifier().toString();
+                if (childIdStr.contains(deviceNodeName)) {
+                    name = childIdStr.substring(childIdStr.indexOf(deviceNodeName) + deviceNodeName.length() + 1, childIdStr.length());
+                } else {
+                    name = rd.getBrowseName().getName();
+                }
 
                 if (tags.contains(name)) {
                     values.put(name, childId);

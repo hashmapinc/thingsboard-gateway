@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.gateway.service.conf;
+package org.thingsboard.gateway.mqtt;
 
-import lombok.Data;
-import org.thingsboard.gateway.service.gateway.MqttGatewaySecurityConfiguration;
+import io.netty.buffer.ByteBuf;
 
-/**
- * Created by ashvayka on 18.01.17.
- */
-@Data
-public class TbConnectionConfiguration {
+public interface MqttHandler {
 
-    private String host;
-    private int port;
-    private long retryInterval;
-    private long connectionTimeout;
-    private int maxInFlight;
-    private int maxQueueSize;
-    private int incomingQueueWarningThreshold;
-    private MqttGatewaySecurityConfiguration security;
-
+    void onMessage(String topic, ByteBuf payload);
 }

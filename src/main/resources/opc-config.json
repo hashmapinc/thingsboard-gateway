@@ -1,9 +1,9 @@
 {
   "servers": [
     {
-      "applicationName": "Thingsboard OPC-UA client",
+      "applicationName": "Tempus OPC-UA client",
       "applicationUri": "",
-      "host": "localhost",
+      "host": "EC2AMAZ-MQM1483",
       "port": 49320,
       "scanPeriodInSeconds": 10,
       "timeoutInMillis": 5000,
@@ -14,6 +14,7 @@
       "keystore": {
         "type": "PKCS12",
         "location": "example.pfx",
+        "fileContent": "",
         "password": "secret",
         "alias": "gateway",
         "keyPassword": "secret"

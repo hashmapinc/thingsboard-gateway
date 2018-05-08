@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.thingsboard.gateway.service.conf;
+package org.thingsboard.gateway.mqtt;
 
-import lombok.Data;
-import org.thingsboard.gateway.service.gateway.MqttGatewaySecurityConfiguration;
+public interface MqttClientCallback {
 
-/**
- * Created by ashvayka on 18.01.17.
- */
-@Data
-public class TbConnectionConfiguration {
-
-    private String host;
-    private int port;
-    private long retryInterval;
-    private long connectionTimeout;
-    private int maxInFlight;
-    private int maxQueueSize;
-    private int incomingQueueWarningThreshold;
-    private MqttGatewaySecurityConfiguration security;
-
+    /**
+     * This method is called when the connection to the server is lost.
+     *
+     * @param cause the reason behind the loss of connection.
+     */
+    public void connectionLost(Throwable cause);
 }

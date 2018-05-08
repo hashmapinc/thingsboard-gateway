@@ -25,9 +25,24 @@ public class KeystoreConfiguration {
 
     private String type;
     private String location;
-    private String locationFileName;
+    private String fileContent;
     private String password;
     private String alias;
     private String keyPassword;
+    private String fileName;
+    private String file;
 
+    @Override
+    public String toString() {
+        return "KeystoreConfiguration{" +
+                "type='" + type + '\'' +
+                ", location='" + location + '\'' +
+                ", fileContent='" + fileContent + '\'' +
+                ", password='" + password + '\'' +
+                ", alias='" + alias + '\'' +
+                ", keyPassword='" + keyPassword + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", file='" + file + '\'' +
+                '}';
+    }
 }

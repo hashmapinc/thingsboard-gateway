@@ -1,8 +1,8 @@
 {
   "brokers": [
     {
-      "host": "localhost",
-      "port": 1883,
+      "host": "pawans-MBP-2.attlocal.net",
+      "port": 1882,
       "ssl": false,
       "retryInterval": 3000,
       "credentials": {

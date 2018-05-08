@@ -18,7 +18,7 @@ package org.thingsboard.gateway.service.gateway;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
-import nl.jk5.mqtt.MqttHandler;
+import org.thingsboard.gateway.mqtt.MqttHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

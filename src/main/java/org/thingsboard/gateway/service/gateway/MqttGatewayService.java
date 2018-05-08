@@ -24,8 +24,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import nl.jk5.mqtt.*;
-import nl.jk5.mqtt.MqttClient;
+import org.thingsboard.gateway.mqtt.*;
+import org.thingsboard.gateway.mqtt.MqttClient;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +106,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
 
     private ScheduledExecutorService scheduler;
     private ExecutorService mqttSenderExecutor;
+    private ExecutorService mqttReceiverExecutor;
     private ExecutorService callbackExecutor = Executors.newCachedThreadPool();
 
     @Autowired
@@ -120,6 +121,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
     @Override
     @PostConstruct
     public void init() {
+        BlockingQueue<MessageFuturePair> incomingQueue = new LinkedBlockingQueue<>();
         this.tenantLabel = configuration.getLabel();
         this.connection = configuration.getConnection();
         this.reporting = configuration.getReporting();
@@ -127,7 +129,8 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
         this.tenantLabel = configuration.getLabel();
         initTimeouts();
         initMqttClient();
-        initMqttSender();
+        initMqttSender(incomingQueue);
+        initMqttReceiver(incomingQueue);
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(this::reportStats, 0, reporting.getInterval(), TimeUnit.MILLISECONDS);
     }
@@ -163,7 +166,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
         devices.putIfAbsent(deviceName, new DeviceInfo(deviceName, deviceType));
         return persistMessage(GATEWAY_CONNECT_TOPIC, msgId, msgData, deviceName,
                 message -> {
-                    log.info("[{}][{}] Device connect event is reported to Thingsboard!", deviceName, msgId);
+                    log.info("[{}][{}] Device connect event is reported to Tempus!", deviceName, msgId);
                 },
                 error -> log.warn("[{}][{}] Failed to report device connection!", deviceName, msgId, error));
 
@@ -171,7 +174,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
 
     @Override
     public Optional<MqttDeliveryFuture> onDeviceDisconnect(String deviceName) {
-        if (devices.remove(deviceName) != null) {
+        if (deviceName != null && devices.remove(deviceName) != null) {
             final int msgId = msgIdSeq.incrementAndGet();
             byte[] msgData = toBytes(newNode().put("device", deviceName));
             log.info("[{}][{}] Device Disconnected!", deviceName, msgId);
@@ -546,9 +549,14 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
         });
     }
 
-    private void initMqttSender() {
+    private void initMqttSender(BlockingQueue<MessageFuturePair> incomingQueue) {
         mqttSenderExecutor = Executors.newSingleThreadExecutor();
-        mqttSenderExecutor.submit(new MqttMessageSender(persistence, connection, tbClient, persistentFileService));
+        mqttSenderExecutor.submit(new MqttMessageSender(persistence, connection, tbClient, persistentFileService, incomingQueue));
+    }
+
+    private void initMqttReceiver(BlockingQueue<MessageFuturePair> incomingQueue) {
+        mqttReceiverExecutor = Executors.newSingleThreadExecutor();
+        mqttReceiverExecutor.submit(new MqttMessageReceiver(persistentFileService, incomingQueue, connection.getIncomingQueueWarningThreshold()));
     }
 
     private static String toString(Exception e) {
@@ -636,7 +644,7 @@ public class MqttGatewayService implements GatewayService, MqttCallback, IMqttMe
             try {
                 SslContext sslCtx = initSslContext(connection.getSecurity());
                 mqttClientConfig = new MqttClientConfig(sslCtx);
-            } catch (Exception e) {
+                } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }

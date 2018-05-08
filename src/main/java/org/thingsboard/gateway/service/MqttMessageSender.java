@@ -20,7 +20,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.netty.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
-import nl.jk5.mqtt.MqttClient;
+import org.thingsboard.gateway.mqtt.MqttClient;
 import org.thingsboard.gateway.service.conf.TbConnectionConfiguration;
 import org.thingsboard.gateway.service.conf.TbPersistenceConfiguration;
 
@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 /**
@@ -45,19 +47,19 @@ public class MqttMessageSender implements Runnable {
 
     private final TbConnectionConfiguration connection;
 
+    private BlockingQueue<MessageFuturePair> incomingQueue;
     private Queue<Future<Void>> outgoingQueue;
-
-    private Consumer<Void> defaultSuccessCallback = message -> log.debug("Successfully sent message: [{}]", message);
-    private Consumer<Throwable> defaultFailureCallback = e -> log.warn("Failed to send message: [{}]", e);
 
     public MqttMessageSender(TbPersistenceConfiguration persistence,
                              TbConnectionConfiguration connection,
                              MqttClient tbClient,
-                             PersistentFileService persistentFileService) {
+                             PersistentFileService persistentFileService,
+                             BlockingQueue<MessageFuturePair> incomingQueue) {
         this.persistence = persistence;
         this.connection = connection;
         this.tbClient = tbClient;
         this.persistentFileService = persistentFileService;
+        this.incomingQueue = incomingQueue;
         outgoingQueue = new ConcurrentLinkedQueue();
     }
 
@@ -101,18 +103,7 @@ public class MqttMessageSender implements Runnable {
 
     private Future<Void> publishMqttMessage(MqttPersistentMessage message) {
         return tbClient.publish(message.getTopic(), Unpooled.wrappedBuffer(message.getPayload()), MqttQoS.AT_LEAST_ONCE).addListener(
-                future -> {
-                    if (future.isSuccess()) {
-                        Consumer<Void> successCallback = persistentFileService.getSuccessCallback(message.getId()).orElse(defaultSuccessCallback);
-                        successCallback.accept(null);
-                        persistentFileService.resolveFutureSuccess(message.getId());
-                    } else {
-                        persistentFileService.saveForResend(message);
-                        persistentFileService.getFailureCallback(message.getId()).orElse(defaultFailureCallback).accept(future.cause());
-                        persistentFileService.resolveFutureFailed(message.getId(), future.cause());
-                        log.warn("Failed to send message [{}] due to [{}]", message, future.cause());
-                    }
-                }
+                future -> incomingQueue.put(new MessageFuturePair(future, message))
         );
     }
 
@@ -138,11 +129,15 @@ public class MqttMessageSender implements Runnable {
 
     private boolean checkClientConnected() throws InterruptedException {
         if (!tbClient.isConnected()) {
-            outgoingQueue.stream().forEach(future -> future.cancel(true));
+            outgoingQueue.forEach(future -> future.cancel(true));
             outgoingQueue.clear();
             log.info("ThingsBoard MQTT connection failed. Reconnecting in [{}] milliseconds", connection.getRetryInterval());
             Thread.sleep(connection.getRetryInterval());
-            tbClient.reconnect();
+            try {
+                tbClient.reconnect().get();
+            } catch (ExecutionException e) {
+                log.error(e.getMessage(), e);
+            }
             return false;
         }
         return true;
