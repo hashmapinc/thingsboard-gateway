@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.thingsboard.server.common.data.kv.*;
+import com.hashmapinc.server.common.data.kv.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

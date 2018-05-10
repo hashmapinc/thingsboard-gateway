@@ -15,11 +15,11 @@
  */
 package org.thingsboard.gateway.service.data;
 
+import com.hashmapinc.server.common.data.kv.KvEntry;
+import com.hashmapinc.server.common.data.kv.TsKvEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.thingsboard.server.common.data.kv.KvEntry;
-import org.thingsboard.server.common.data.kv.TsKvEntry;
 
 import java.util.List;
 

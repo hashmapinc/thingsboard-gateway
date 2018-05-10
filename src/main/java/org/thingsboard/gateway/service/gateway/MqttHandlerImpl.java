@@ -16,6 +16,7 @@
 package org.thingsboard.gateway.service.gateway;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hashmapinc.server.common.data.kv.*;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
 import org.thingsboard.gateway.mqtt.MqttHandler;
@@ -28,7 +29,6 @@ import org.thingsboard.gateway.service.PersistentFileService;
 import org.thingsboard.gateway.service.RpcCommandListener;
 import org.thingsboard.gateway.service.data.*;
 import org.thingsboard.gateway.util.JsonTools;
-import org.thingsboard.server.common.data.kv.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

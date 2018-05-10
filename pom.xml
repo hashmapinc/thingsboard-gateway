@@ -68,9 +68,9 @@
             <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.thingsboard.common</groupId>
+            <groupId>com.hashmapinc.common</groupId>
             <artifactId>data</artifactId>
-            <version>${thingsboard.version}</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.paho</groupId>

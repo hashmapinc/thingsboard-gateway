@@ -15,8 +15,8 @@
  */
 package org.thingsboard.gateway.extensions.opc.scan;
 
+import com.hashmapinc.server.common.data.kv.KvEntry;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.thingsboard.server.common.data.kv.KvEntry;
 
 import java.util.Optional;
 

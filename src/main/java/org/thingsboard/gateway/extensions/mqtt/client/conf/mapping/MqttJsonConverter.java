@@ -16,6 +16,7 @@
 package org.thingsboard.gateway.extensions.mqtt.client.conf.mapping;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hashmapinc.server.common.data.kv.*;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -27,7 +28,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.util.StringUtils;
 import org.thingsboard.gateway.service.data.DeviceData;
 import org.thingsboard.gateway.util.converter.BasicJsonConverter;
-import org.thingsboard.server.common.data.kv.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;

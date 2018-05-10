@@ -15,6 +15,7 @@
  */
 package org.thingsboard.gateway.util.converter;
 
+import com.hashmapinc.server.common.data.kv.*;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.Data;
@@ -23,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.thingsboard.gateway.service.data.DeviceData;
 import org.thingsboard.gateway.util.converter.transformer.DataValueTransformer;
-import org.thingsboard.server.common.data.kv.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -15,7 +15,8 @@
  */
 package org.thingsboard.gateway.service;
 
-import org.thingsboard.server.common.data.kv.KvEntry;
+
+import com.hashmapinc.server.common.data.kv.KvEntry;
 
 import java.util.List;
 

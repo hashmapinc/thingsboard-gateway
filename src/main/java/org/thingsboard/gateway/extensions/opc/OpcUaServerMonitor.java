@@ -15,6 +15,8 @@
  */
 package org.thingsboard.gateway.extensions.opc;
 
+import com.hashmapinc.server.common.data.kv.KvEntry;
+import com.hashmapinc.server.common.data.kv.TsKvEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -39,8 +41,6 @@ import org.thingsboard.gateway.extensions.opc.scan.OpcUaNode;
 import org.thingsboard.gateway.service.gateway.GatewayService;
 import org.thingsboard.gateway.util.CertificateInfo;
 import org.thingsboard.gateway.util.ConfigurationTools;
-import org.thingsboard.server.common.data.kv.KvEntry;
-import org.thingsboard.server.common.data.kv.TsKvEntry;
 
 import java.util.*;
 import java.util.concurrent.*;

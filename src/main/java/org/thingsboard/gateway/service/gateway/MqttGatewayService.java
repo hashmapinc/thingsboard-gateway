@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.Resources;
+import com.hashmapinc.server.common.data.kv.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -35,7 +36,6 @@ import org.thingsboard.gateway.service.*;
 import org.thingsboard.gateway.service.conf.*;
 import org.thingsboard.gateway.service.data.*;
 import org.thingsboard.gateway.util.JsonTools;
-import org.thingsboard.server.common.data.kv.*;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.KeyManagerFactory;
