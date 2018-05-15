@@ -18,6 +18,7 @@ package org.thingsboard.gateway.extensions.witsml;
 import lombok.extern.slf4j.Slf4j;
 import org.thingsboard.gateway.extensions.ExtensionUpdate;
 import org.thingsboard.gateway.extensions.witsml.conf.WitsmlConfiguration;
+import org.thingsboard.gateway.extensions.witsml.monitors.Witsml1311ServerMonitor;
 import org.thingsboard.gateway.extensions.witsml.monitors.Witsml1411ServerMonitor;
 import org.thingsboard.gateway.extensions.witsml.monitors.WitsmlServerMonitor;
 import org.thingsboard.gateway.service.conf.TbExtensionConfiguration;
@@ -63,7 +64,7 @@ public class DefaultWitsmlService extends ExtensionUpdate implements WitsmlServi
                 if(c.getVersion().equalsIgnoreCase("v1411"))
                     return new Witsml1411ServerMonitor(gateway, c);
                 else
-                    return new Witsml1411ServerMonitor(gateway, c);
+                    return new Witsml1311ServerMonitor(gateway, c);
             }).collect(Collectors.toList());
             for (WitsmlServerMonitor monitor : monitors) {
                 monitor.connect();

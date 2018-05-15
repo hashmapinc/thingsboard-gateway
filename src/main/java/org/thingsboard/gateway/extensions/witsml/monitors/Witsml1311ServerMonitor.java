@@ -38,7 +38,7 @@ public class Witsml1311ServerMonitor extends AbstractWitsmlServerMonitor{
     @Override
     protected void scanForWells() {
         String wellsXml;
-        com.hashmapinc.tempus.WitsmlObjects.v1311.ObjWells wells = null;
+        ObjWells wells = null;
         try {
             wellsXml = client.getWells();
             wells = WitsmlMarshal.deserialize(wellsXml, ObjWells.class);
