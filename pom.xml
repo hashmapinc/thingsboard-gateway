@@ -54,6 +54,7 @@
         <pkg.installFolder>/usr/share/${pkg.name}</pkg.installFolder>
         <pkg.win.dist>${project.build.directory}/windows</pkg.win.dist>
         <netty.version>4.1.22.Final</netty.version>
+        <witsml.client.version>1.0.18</witsml.client.version>
     </properties>
 
     <dependencies>
@@ -156,6 +157,11 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
             <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hashmapinc.tempus</groupId>
+            <artifactId>witsml-client</artifactId>
+            <version>${witsml.client.version}</version>
         </dependency>
     </dependencies>
 
