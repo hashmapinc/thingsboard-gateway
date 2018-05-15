@@ -1,0 +1,18 @@
+{
+  "servers": [
+    {
+      "host": "EC2AMAZ-MQM1483",
+      "port": 49320,
+      "scanPeriodInSeconds": 100,
+      "timeoutInMillis": 5000,
+      "identity": {
+        "type": "username",
+        "username": "username",
+        "password": "password"
+      },
+      "version": "v1311",
+      "objectTypes": ["wellbore", "logs", "mudLogs", "messages", "rig", "trajectory"]
+      "status": "drilling"
+    }
+  ]
+}

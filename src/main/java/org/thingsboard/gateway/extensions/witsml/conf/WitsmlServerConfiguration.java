@@ -31,4 +31,5 @@ public class WitsmlServerConfiguration {
     //Create Enum for below fields
     private List<String> objectTypes;
     private String version;
+    private String wellStatus;
 }
